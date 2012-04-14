@@ -28,6 +28,7 @@ or see http://www.gnu.org/licenses/agpl.txt.
 #undef VERBOSE2
 #endif
 
+#include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/ini_parser.hpp>
@@ -81,8 +82,22 @@ int main (int argc, char *argv[]) {
         if(0 < contractorConfig.GetParameter("SRTM").size() )
             SRTM_ROOT = contractorConfig.GetParameter("SRTM");
     }
-    if(0 != SRTM_ROOT.size())
+    if(0 != SRTM_ROOT.size()) {
         INFO("Loading SRTM from/to " << SRTM_ROOT);
+        boost::filesystem::path p(SRTM_ROOT);
+        if(!boost::filesystem::exists(p)) {
+        	//try to create
+        	try {
+        		boost::filesystem::create_directory(p);
+        	} catch (...) {
+        		ERR(SRTM_ROOT << " could not be created");
+        	}
+        	INFO("Created " << SRTM_ROOT << " because it did not exist yet");
+        }
+        if(!boost::filesystem::is_directory(p)) {
+        	ERR(SRTM_ROOT << " seems to be not a directory" );
+        }
+    }
     omp_set_num_threads(numberOfThreads);
 
     INFO("Using restrictions from file: " << argv[2]);
@@ -147,9 +162,11 @@ int main (int argc, char *argv[]) {
 
     SRTMLookup heightLookup(SRTM_ROOT);
 
-    INFO("resolving height information");
-    BOOST_FOREACH(NodeInfo & node, internalToExternalNodeMapping) {
-    	INFO("Height of (" << node.lat << "," << node.lon << ") = " << heightLookup.height(node.lon/100000., node.lat/100000.));
+    if(0 < SRTM_ROOT.size()) {
+    	INFO("resolving height information");
+    	BOOST_FOREACH(NodeInfo & node, internalToExternalNodeMapping) {
+    		INFO("Height of (" << node.lat << "," << node.lon << ") = " << heightLookup.height(node.lon/100000., node.lat/100000.));
+    	}
     }
 
     INFO("writing node map ...");
