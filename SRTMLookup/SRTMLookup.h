@@ -35,13 +35,21 @@ or see http://www.gnu.org/licenses/agpl.txt.
 #include <cassert>
 #include <string>
 
+#include <boost/shared_ptr.hpp>
+
 #include "NASAGridSquare.h"
+#include "../Util/BaseConfiguration.h"
 #include "../DataStructures/LRUCache.h"
 
 class SRTMLookup {
 public:
 
-    SRTMLookup(std::string & _rp) : cache(MAX_CACHE_SIZE), ROOT_PATH(_rp) {
+    SRTMLookup(const char * _rp) : cache(MAX_CACHE_SIZE), ROOT_PATH(_rp), srtmConfig("srtm.ini") {
+        // Double check that this compiler truncates towards zero.
+        assert(-1 == int(float(-1.9)));
+    }
+
+    SRTMLookup(std::string & _rp) : cache(MAX_CACHE_SIZE), ROOT_PATH(_rp), srtmConfig("srtm.ini") {
         // Double check that this compiler truncates towards zero.
         assert(-1 == int(float(-1.9)));
     }
@@ -57,9 +65,9 @@ public:
 
         int k = key(lng,lat);
         if(!cache.Holds(k)) {
-            cache.Insert(k , new NasaGridSquare(lng,lat, ROOT_PATH));
+            cache.Insert(k , boost::shared_ptr<NasaGridSquare>(new NasaGridSquare(lng,lat, ROOT_PATH)) );
         }
-        NasaGridSquare * result;
+        boost::shared_ptr<NasaGridSquare> result;
         cache.Fetch(k, result);
         return result->getHeight(lng_fraction,lat_fraction);
     }
@@ -67,7 +75,7 @@ public:
 private:
     /** Split a floating point number (num) into integer (i) & fraction (f)
      *  components. */
-    inline void split(float num, int& i, float& f) const {
+    inline void split(const float num, int& i, float& f) const {
         if(num>=0.0)
             i=int(num);
         else
@@ -76,12 +84,13 @@ private:
     }
 
     /** Formula for grid squares' unique keys. */
-    int key(int lng, int lat) {
+    int key(const int lng, const int lat) const {
         return 1000*lat + lng;
     }
-    LRUCache<NasaGridSquare*> cache;
+    LRUCache<int, boost::shared_ptr<NasaGridSquare> > cache;
     static const int MAX_CACHE_SIZE = 250;
     std::string ROOT_PATH;
+    BaseConfiguration srtmConfig;
 };
 
 #endif // SRTMLOOKUP_H

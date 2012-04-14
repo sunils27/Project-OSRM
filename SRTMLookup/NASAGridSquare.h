@@ -37,9 +37,9 @@ or see http://www.gnu.org/licenses/agpl.txt.
 
 class NasaGridSquare {
 public:
-    const static short NO_DATA =-32768; ///< NASA's magic number for no data.
+    static const short NO_SRTM_DATA =-32768; ///< NASA's magic number for no data.
 
-    NasaGridSquare(int lng, int lat, std::string & _rp);
+    explicit NasaGridSquare(int lng, int lat, std::string & _rp);
     ~NasaGridSquare();
     short getHeight(float lng_fraction, float lat_fraction) const;
     bool hasData() const {return bool(elevationMap != NULL);}
@@ -58,7 +58,7 @@ private:
     /** Loads the file into memory, pointed to by 'data'. Sets num_bytes. */
     void load(const char* filename);
     /** Converts lng,lat floats to col,row ints. Returns TRUE if result valid. */
-    bool lngLat_to_colRow(float lng_fraction, float lat_fraction, unsigned int& col,  unsigned int& row) const;
+    bool latLon2colRow(float lng_fraction, float lat_fraction, unsigned int& col,  unsigned int& row) const;
 
     inline bool exists(const char* path) {
         std::ifstream ifile(path);

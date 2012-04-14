@@ -53,6 +53,8 @@ or see http://www.gnu.org/licenses/agpl.txt.
 #include "Util/GraphLoader.h"
 #include "Util/OpenMPReplacement.h"
 
+#include "SRTMLookup/SRTMLookup.h"
+
 using namespace std;
 
 typedef DynamicGraph<EdgeData>::InputEdge InputEdge;
@@ -142,6 +144,13 @@ int main (int argc, char *argv[]) {
     unsigned crc32OfNodeBasedEdgeList = crc32((char *)&(nodeBasedEdgeList[0]), nodeBasedEdgeList.size()*sizeof(EdgeBasedGraphFactory::EdgeBasedNode));
 
     std::vector<EdgeBasedGraphFactory::EdgeBasedNode>().swap(nodeBasedEdgeList);
+
+    SRTMLookup heightLookup(SRTM_ROOT);
+
+    INFO("resolving height information");
+    BOOST_FOREACH(NodeInfo & node, internalToExternalNodeMapping) {
+    	INFO("Height of (" << node.lat << "," << node.lon << ") = " << heightLookup.height(node.lon/100000., node.lat/100000.));
+    }
 
     INFO("writing node map ...");
     std::ofstream mapOutFile(nodeOut, ios::binary);

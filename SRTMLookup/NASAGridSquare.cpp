@@ -20,6 +20,8 @@ or see http://www.gnu.org/licenses/agpl.txt.
 
 
 #include "NASAGridSquare.h"
+#include "FileDownload.h"
+#include "SRTM3V21Regions.h"
 
 NasaGridSquare::~NasaGridSquare() {
     delete elevationMap;
@@ -29,13 +31,13 @@ std::string NasaGridSquare::make_filename(const char* ext) const {
     char EW =(longitude>=0 ? 'E' : 'W' );
     char NS =(latitude >=0 ? 'N' : 'S');
     std::stringstream ss;
-    ss<<std::setfill('0')
+    ss<<setfill('0')
     << ROOT_PATH
     << "/"
     <<NS
-    <<std::setw(2)<<std::abs(latitude)<<std::setw(0)
+    <<setw(2)<<abs(latitude)<<setw(0)
     <<EW
-    <<std::setw(3)<<std::abs(longitude)<<std::setw(0)
+    <<setw(3)<<abs(longitude)<<setw(0)
     <<'.'<<ext;
     return ss.str();
 }
@@ -58,13 +60,13 @@ void NasaGridSquare::load(const char* filename) {
         return;
     }
 
-    unsigned entries = zip_get_num_files(test);
-    INFO("File has " << entries << " entries");
+//    unsigned entries = zip_get_num_files(test);
+//    INFO("File has " << entries << " entries");
     struct zip_stat stat;
     zip_stat_index(test, 0, 0, &stat);
-    INFO("included: " << stat.name);
-    INFO("uncompressed: " << stat.size);
-    INFO("compressed: " << stat.comp_size);
+//    INFO("included: " << stat.name);
+//    INFO("uncompressed: " << stat.size);
+//    INFO("compressed: " << stat.comp_size);
     num_bytes = stat.size;
     delete elevationMap;
     elevationMap = new char[stat.size];
@@ -77,14 +79,14 @@ void NasaGridSquare::load(const char* filename) {
 
 }
 
-bool NasaGridSquare::lngLat_to_colRow(float lng_fraction, float lat_fraction, unsigned int& col,  unsigned int&  row) const {
+bool NasaGridSquare::latLon2colRow(float lng_fraction, float lat_fraction, unsigned int& col,  unsigned int&  row) const {
     col = int( 0.5 + lng_fraction * float(numCols-1) );
     row = numRows-1 - int( 0.5 + lat_fraction * float(numRows-1) );
     return( col<numCols && row<numRows );
 }
 
 NasaGridSquare::NasaGridSquare(int lng, int lat, std::string & _rp) : ROOT_PATH(_rp), elevationMap(NULL), longitude(lng), latitude(lat), num_bytes(0), numRows(1), numCols(1) {
-    std::string filename =make_filename("hgt");
+    std::string filename = make_filename("hgt");
     std::cout << "Loading " << filename << std::endl;
     load(filename.c_str());
     if(hasData())
@@ -93,12 +95,12 @@ NasaGridSquare::NasaGridSquare(int lng, int lat, std::string & _rp) : ROOT_PATH(
 
 short NasaGridSquare::getHeight(float lng_fraction, float lat_fraction) const {
     if(!hasData())
-        return NO_DATA;
+        return NO_SRTM_DATA;
     unsigned int col,row;
-    if(!lngLat_to_colRow(lng_fraction,lat_fraction, col,row))
-        return NO_DATA;
+    if(!latLon2colRow(lng_fraction,lat_fraction, col,row))
+        return NO_SRTM_DATA;
     if(col>=numCols || row>=numRows)
-        return NO_DATA;
+        return NO_SRTM_DATA;
     unsigned int i=( col + row * numCols );
     unsigned short datum2=((unsigned short*)elevationMap)[i];
     short result2=(datum2>>8 | datum2<<8);
