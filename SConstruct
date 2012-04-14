@@ -173,6 +173,14 @@ if not conf.CheckLib('boost_system', language="C++"):
 		print "using boost -mt"
 		env.Append(CCFLAGS = ' -lboost_system-mt')
 		env.Append(LINKFLAGS = ' -lboost_system-mt')
+if not conf.CheckLib('boost_filesystem', language="C++"):
+	if not conf.CheckLib('boost_filesystem-mt', language="C++"):
+		print "boost_filesystem library not found. Exiting"
+		Exit(-1)
+	else:
+		print "using boost -mt"
+		env.Append(CCFLAGS = ' -lboost_filesystem-mt')
+		env.Append(LINKFLAGS = ' -lboost_filesystem-mt')
 if not conf.CheckCXXHeader('boost/archive/iterators/base64_from_binary.hpp'):
 	print "boost/archive/iterators/base64_from_binary.hpp not found. Exiting"
 	Exit(-1)
