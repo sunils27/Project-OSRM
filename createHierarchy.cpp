@@ -123,6 +123,7 @@ int main (int argc, char *argv[]) {
     EdgeBasedGraphFactory * edgeBasedGraphFactory = new EdgeBasedGraphFactory (nodeBasedNodeNumber, edgeList, bollardNodes, trafficLightNodes, inputRestrictions, internalToExternalNodeMapping, speedProfile, SRTM_ROOT);
     std::vector<ImportEdge>().swap(edgeList);
 
+    //todo: produce edge-expanded graph for each component, put it into NNGrid, contract and repeat until all components are done
     edgeBasedGraphFactory->Run();
     std::vector<_Restriction>().swap(inputRestrictions);
     NodeID edgeBasedNodeNumber = edgeBasedGraphFactory->GetNumberOfNodes();
