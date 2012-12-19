@@ -105,9 +105,10 @@ public:
 
 
     struct SpeedProfileProperties{
-        SpeedProfileProperties()  : trafficSignalPenalty(0), uTurnPenalty(0) {}
+        SpeedProfileProperties()  : trafficSignalPenalty(0), uTurnPenalty(0), has_turn_function(false) {}
         int trafficSignalPenalty;
         int uTurnPenalty;
+        bool has_turn_function;
     } speedProfile;
 private:
     boost::shared_ptr<_NodeBasedDynamicGraph>   _nodeBasedGraph;

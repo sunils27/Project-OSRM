@@ -336,12 +336,16 @@ void EdgeBasedGraphFactory::Run(const char * originalEdgeDataFilename, lua_State
 short EdgeBasedGraphFactory::AnalyzeTurn(const NodeID u, const NodeID v, const NodeID w, unsigned& penalty, lua_State *myLuaState) const {
     double angle = GetAngleBetweenTwoEdges(inputNodeInfoList[u], inputNodeInfoList[v], inputNodeInfoList[w]);
 	
-	try {
-        //call lua profile to compute turn penalty
-        penalty = luabind::call_function<int>( myLuaState, "turn_function", 180-angle );
-    } catch (const luabind::error &er) {
-        cerr << er.what() << endl;
-        //TODO handle lua errors
+    if( speedProfile.has_turn_function ) {
+    	try {
+            //call lua profile to compute turn penalty
+            penalty = luabind::call_function<int>( myLuaState, "turn_function", 180-angle );
+        } catch (const luabind::error &er) {
+            cerr << er.what() << endl;
+            //TODO handle lua errors
+        }
+    } else {
+        penalty = 0;
     }
     
     if(u == w) {

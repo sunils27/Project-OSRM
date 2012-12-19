@@ -48,6 +48,7 @@ extern "C" {
 #include "Util/InputFileUtil.h"
 #include "Util/LuaUtil.h"
 #include "Util/StringUtil.h"
+#include "Util/Lua.h"
 
 typedef QueryEdge::EdgeData EdgeData;
 typedef DynamicGraph<EdgeData>::InputEdge InputEdge;
@@ -133,8 +134,9 @@ int main (int argc, char *argv[]) {
         ERR(lua_tostring(myLuaState,-1)<< " occured in scripting block");
     }
     speedProfile.uTurnPenalty = 10*lua_tointeger(myLuaState, -1);
-
-
+    
+    speedProfile.has_turn_function = lua_function_exists( myLuaState, "turn_function" );
+    
     std::vector<ImportEdge> edgeList;
     NodeID nodeBasedNodeNumber = readBinaryOSRMGraphFromStream(in, edgeList, bollardNodes, trafficLightNodes, &internalToExternalNodeMapping, inputRestrictions);
     in.close();

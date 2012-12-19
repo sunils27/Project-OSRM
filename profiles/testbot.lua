@@ -69,7 +69,3 @@ function way_function (way, numberOfNodesInWay)
 	way.type = 1
 	return 1
 end
-
-function turn_function (angle)
-	return 0
-end
