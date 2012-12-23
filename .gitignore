@@ -80,4 +80,11 @@ stxxl.errlog
 ###################
 /sandbox/
 
-/test/profile.lua
+test/profile.lua
+
+# CMake temp + build Files #
+############################
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
