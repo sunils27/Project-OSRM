@@ -30,7 +30,7 @@ ENDIF(CMAKE_BUILD_TYPE MATCHES RELEASE)
 #Configuring compilers
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	# using Clang
-	set(CMAKE_CXX_FLAGS "-Wall")
+	set(CMAKE_CXX_FLAGS "-Wall -Wno-unknown-pragmas")
 	message("OpenMP parallelization not available using clang++")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	# using GCC
