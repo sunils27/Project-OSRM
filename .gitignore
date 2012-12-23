@@ -81,3 +81,10 @@ win/bin-debug/
 sandbox/
 
 test/profile.lua
+
+# CMake temp + build Files #
+############################
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
