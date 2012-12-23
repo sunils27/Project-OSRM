@@ -41,6 +41,11 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	# using Visual Studio C++
 endif()
 
+if(APPLE)
+	SET(CMAKE_OSX_ARCHITECTURES "x86_64")
+	message("Set Archtitecture to x64 on OS X")
+endif()
+
 #Check Boost
 SET(BOOST_MIN_VERSION "1.44.0")
 FIND_PACKAGE( Boost ${BOOST_MIN_VERSION} COMPONENTS ${BOOST_COMPONENTS} REQUIRED )
@@ -56,10 +61,16 @@ include_directories(${BZIP_INCLUDE_DIRS})
 target_link_libraries (osrm-extract ${BZIP2_LIBRARIES})
 
 find_package( ZLIB REQUIRED )
+target_link_libraries (osrm-extract ${ZLIB_LIBRARY})
 target_link_libraries (osrm-routed ${ZLIB_LIBRARY})
+
+find_package( Threads REQUIRED )
+target_link_libraries (osrm-extract ${Threads_LIBRARY})
 
 find_package( Lua51 REQUIRED ) 
 include_directories(${LUA_INCLUDE_DIR})
+target_link_libraries( osrm-extract ${LUA_LIBRARY} )
+target_link_libraries( osrm-prepare ${LUA_LIBRARY} )
 
 find_package( LibXml2 REQUIRED )
 include_directories(${LIBXML2_INCLUDE_DIR})
