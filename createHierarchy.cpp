@@ -48,7 +48,6 @@ extern "C" {
 #include "Util/InputFileUtil.h"
 #include "Util/LuaUtil.h"
 #include "Util/StringUtil.h"
-#include "Util/Lua.h"
 
 typedef QueryEdge::EdgeData EdgeData;
 typedef DynamicGraph<EdgeData>::InputEdge InputEdge;

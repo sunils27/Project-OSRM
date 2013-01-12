@@ -341,7 +341,7 @@ short EdgeBasedGraphFactory::AnalyzeTurn(const NodeID u, const NodeID v, const N
             //call lua profile to compute turn penalty
             penalty = luabind::call_function<int>( myLuaState, "turn_function", 180-angle );
         } catch (const luabind::error &er) {
-            cerr << er.what() << endl;
+            std::cerr << er.what() << std::endl;
             //TODO handle lua errors
         }
     } else {
