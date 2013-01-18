@@ -17,15 +17,17 @@ add_executable(osrm-routed ${RoutedSources})
 set_target_properties(osrm-routed PROPERTIES COMPILE_FLAGS -DROUTED)
 
 # Check the release mode
-IF(NOT CMAKE_BUILD_TYPE MATCHES DEBUG)
-	set(CMAKE_BUILD_TYPE RELEASE)
-ENDIF(NOT CMAKE_BUILD_TYPE MATCHES DEBUG) 
-IF(CMAKE_BUILD_TYPE MATCHES DEBUG)
+
+string( TOLOWER "${CMAKE_BUILD_TYPE}" build_type )
+IF(NOT build_type MATCHES debug)
+	set(build_type release)
+ENDIF(NOT build_type MATCHES debug) 
+IF(build_type MATCHES debug)
     message(STATUS "Configuring OSRM in debug mode")
-ENDIF(CMAKE_BUILD_TYPE MATCHES DEBUG) 
-IF(CMAKE_BUILD_TYPE MATCHES RELEASE)
+ENDIF(build_type MATCHES debug) 
+IF(build_type MATCHES release)
     message(STATUS "Configuring OSRM in release mode")
-ENDIF(CMAKE_BUILD_TYPE MATCHES RELEASE) 
+ENDIF(build_type MATCHES release) 
 
 #Configuring compilers
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
